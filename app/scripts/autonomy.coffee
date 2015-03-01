@@ -1,13 +1,11 @@
+app = angular.module('autonomyApp', ['video'])
 
-class AutonomyController
-    constructor: ($scope) ->
-        $scope.foundation = 'ooo la la'
-
-AutonomyController.done
-
-app = angular.module('autonomyApp', [])
-
-.controller("autonomyController",
-    AutonomyController)
+.controller("autonomyController", [
+        '$scope',
+        'videoService',
+        ($scope, video) ->
+            $scope.foundation = 'ooo la la'
+            video.postTest()
+])
 
 
