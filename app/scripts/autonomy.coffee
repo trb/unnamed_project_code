@@ -1,4 +1,3 @@
-console.log "'hello mr app'"
 
 class AutonomyController
     constructor: ($scope) ->
