@@ -34,8 +34,12 @@ module.exports = function (grunt) {
         files: ['bower.json'],
         tasks: ['wiredep']
       },
+      templates: {
+          files: ['<%= config.app %>/scripts/{,*/}*.html'],
+          tasks: ['copy:templates']
+      },
       coffee: {
-        files: ['<%= config.app %>/scripts/{,*/}*.{coffee,litcoffee,coffee.md}'],
+        files: ['<%= config.app %>/scripts/{**/,*}.{coffee,litcoffee,coffee.md}'],
         tasks: ['coffee:dist']
       },
       coffeeTest: {
@@ -59,8 +63,9 @@ module.exports = function (grunt) {
         },
         files: [
           '<%= config.app %>/{,*/}*.html',
-          '.tmp/styles/{,*/}*.css',
-          '.tmp/scripts/{,*/}*.js',
+          '.tmp/styles/{**/,*}.css',
+          '.tmp/scripts/{**/,*}.js',
+          '.tmp/views/{**/,*}.html',
           '<%= config.app %>/images/{,*/}*'
         ]
       }
@@ -363,6 +368,12 @@ module.exports = function (grunt) {
         cwd: '<%= config.app %>/styles',
         dest: '.tmp/styles/',
         src: '{,*/}*.css'
+      },
+      templates: {
+          expand: true,
+          cwd: '<%= config.app %>/scripts',
+          src: '**/*.html',
+          dest: '.tmp/views'
       }
     },
 
@@ -371,7 +382,8 @@ module.exports = function (grunt) {
       server: [
         'sass:server',
         'coffee:dist',
-        'copy:styles'
+        'copy:styles',
+        'copy:templates'
       ],
       test: [
         'coffee',
@@ -386,7 +398,6 @@ module.exports = function (grunt) {
       ]
     }
   });
-
 
   grunt.registerTask('serve', 'start the server and preview your app, --allow-remote for remote access', function (target) {
     if (grunt.option('allow-remote')) {
