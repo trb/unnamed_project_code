@@ -1,26 +1,6 @@
-<div>
+<div ng-controller="videoController">
     <script src='http://static.opentok.com/webrtc/v2.2/js/opentok.min.js'></script>
-    <script type="text/javascript">
-        // Initialize API key, session, and token...
-        // Think of a session as a room, and a token as the key to get in to the room
-        // Sessions and tokens are generated on your server and passed down to the client
-        var apiKey = "45174472";
-        var sessionId = "2_MX40NTE3NDQ3Mn5-MTQyNTgzODcxNzEyMX5CWjNmUXJXQ2g5YUZ5MTZ0eFBvNXJtcDJ-fg";
-        var token = "T1==cGFydG5lcl9pZD00NTE3NDQ3MiZzaWc9MjU4MzU2MmRiYjgwZDM1MGFhNDA0YjhlY2Y0YTBkYjRkNjQ2ODBlYTpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5URTNORFEzTW41LU1UUXlOVGd6T0RjeE56RXlNWDVDV2pObVVYSlhRMmc1WVVaNU1UWjBlRkJ2TlhKdGNESi1mZyZjcmVhdGVfdGltZT0xNDI1ODM4NzI0Jm5vbmNlPTAuMjQyNzMzNzMwMjQzNDAxNzI=";
-
-        // Initialize session, set up event listeners, and connect
-        var session = OT.initSession(apiKey, sessionId);
-
-        session.on("streamCreated", function(event) {
-            session.subscribe(event.stream);
-        });
-
-        session.connect(token, function(error) {
-            var publisher = OT.initPublisher();
-            session.publish(publisher);
-        });
-    </script>
-    </head>
+    <button ng-click="startCall()">Start Call</button>
     <h1>Awesome video feed!</h1>
     <div id="myPublisherDiv"></div>
 </div>
