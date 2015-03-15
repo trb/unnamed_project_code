@@ -35,15 +35,15 @@ module.exports = function (grunt) {
         tasks: ['wiredep']
       },
       templates: {
-          files: ['<%= config.app %>/scripts/{,*/}*.html'],
-          tasks: ['copy:templates']
+        files: ['<%= config.app %>/scripts/**/*.html'],
+        tasks: ['copy:templates']
       },
       coffee: {
-        files: ['<%= config.app %>/scripts/{**/,*}.{coffee,litcoffee,coffee.md}'],
+        files: ['<%= config.app %>/scripts/**/*.{coffee,litcoffee,coffee.md}'],
         tasks: ['coffee:dist']
       },
       coffeeTest: {
-        files: ['test/spec/{,*/}*.{coffee,litcoffee,coffee.md}'],
+        files: ['test/spec/**/*.{coffee,litcoffee,coffee.md}'],
         tasks: ['coffee:test', 'test:watch']
       },
       gruntfile: {
@@ -63,9 +63,9 @@ module.exports = function (grunt) {
         },
         files: [
           '<%= config.app %>/{,*/}*.html',
-          '.tmp/styles/{**/,*}.css',
-          '.tmp/scripts/{**/,*}.js',
-          '.tmp/views/{**/,*}.html',
+          '.tmp/styles/**/*.css',
+          '.tmp/scripts/**/*.{js,html}',
+          '.tmp/views/**/*.html',
           '<%= config.app %>/images/{,*/}*'
         ]
       }
