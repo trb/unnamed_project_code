@@ -8,8 +8,7 @@ app = angular.module('autonomyApp', [
     ($routeProvider) ->
         $routeProvider
         .when('/video', {
-            templateUrl: 'views/modules/video/video.html',
-            controller: 'videoController'
+            templateUrl: 'views/modules/video/video.html'
         })
         .when('/login', {
             templateUrl: 'views/modules/login/login.html',
