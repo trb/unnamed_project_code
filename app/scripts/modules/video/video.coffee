@@ -44,7 +44,7 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                         if (error)
                             console.log(error);
                         else
-                            session.publish('myPublisherDiv', {width: 320, height: 240});
+                            session.publish('myPublisherDiv', {width: 1920, height: 1080});
                     );
 
                     console.log(session);
