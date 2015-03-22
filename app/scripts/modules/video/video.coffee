@@ -33,24 +33,18 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
 
                     session = OT.initSession(server.apiKey, sessionId);
 
-                    publisher = OT.initPublisher('myPublisherDiv');
-
                     token = 'T1==cGFydG5lcl9pZD00NTE3NDQ3MiZzaWc9M2EyN2I4Mzg0YjJhNTRkNGNmZjIzMDU3OTFlMDg2MWNmYzA1NTkwZTpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5URTNORFEzTW41LU1UUXlOVGd6T0RjeE56RXlNWDVDV2pObVVYSlhRMmc1WVVaNU1UWjBlRkJ2TlhKdGNESi1mZyZjcmVhdGVfdGltZT0xNDI3MDUxMzQ1Jm5vbmNlPTAuMTUzNjczNzQxMjM2NTk2OTQ='
 
                     session.on({
-                            streamCreated: (event) ->
-                                session.subscribe(event.stream, 'subscribersDiv', {insertMode: 'append'});
-                        }
+                        streamCreated: (event) ->
+                            session.subscribe(event.stream, 'subscribersDiv', {insertMode: 'append'});
                     });
 
-                        session.connect(token, (error) ->
-                        if(error) {
+                    session.connect(token, (error) ->
+                        if (error)
                             console.log(error);
-                        }
-                        else {
+                        else
                             session.publish('myPublisherDiv', {width: 320, height: 240});
-                        }
-                    }
                     );
 
                     console.log(session);
