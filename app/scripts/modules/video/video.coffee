@@ -29,17 +29,28 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                 server.createSession().success((result)->
                     console.log('results', result.sessions.Session.session_id);
 
-                    session = OT.initSession(server.apiKey, result.sessions.Session.session_id);
+                    sessionId = '2_MX40NTE3NDQ3Mn5-MTQyNTgzODcxNzEyMX5CWjNmUXJXQ2g5YUZ5MTZ0eFBvNXJtcDJ-fg';
+
+                    session = OT.initSession(server.apiKey, sessionId);
 
                     publisher = OT.initPublisher('myPublisherDiv');
 
-                    token = 'T1==cGFydG5lcl9pZD00NTE3NDQ3MiZzaWc9YjE3ZWM5MmU1ZTIyMDU0YzMwYTM4YjE5YjAwYTRlYmJlOTI1NzgxMDpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5URTNORFEzTW41LU1UUXlOalExTkRFeE5qRXhNbjVJTkRCc01WZFJPRWRxTXpaaWNURklPVVZXVlhoclQzUi1mZyZjcmVhdGVfdGltZT0xNDI2NDU0MzE1Jm5vbmNlPTAuODU3NDk1NzQwMjg1MTA4NyZleHBpcmVfdGltZT0xNDI2NDU3NTQw'
+                    token = 'T1==cGFydG5lcl9pZD00NTE3NDQ3MiZzaWc9M2EyN2I4Mzg0YjJhNTRkNGNmZjIzMDU3OTFlMDg2MWNmYzA1NTkwZTpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5URTNORFEzTW41LU1UUXlOVGd6T0RjeE56RXlNWDVDV2pObVVYSlhRMmc1WVVaNU1UWjBlRkJ2TlhKdGNESi1mZyZjcmVhdGVfdGltZT0xNDI3MDUxMzQ1Jm5vbmNlPTAuMTUzNjczNzQxMjM2NTk2OTQ='
 
-                    session.on("streamCreated", (event) ->
-                        session.subscribe(event.stream));
+                    session.on({
+                            streamCreated: (event) ->
+                                session.subscribe(event.stream, 'subscribersDiv', {insertMode: 'append'});
+                        }
+                    });
 
-                    session.connect(token, (error) ->
-                        session.publish(publisher);
+                        session.connect(token, (error) ->
+                        if(error) {
+                            console.log(error);
+                        }
+                        else {
+                            session.publish('myPublisherDiv', {width: 320, height: 240});
+                        }
+                    }
                     );
 
                     console.log(session);
