@@ -29,7 +29,7 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                 server.createSession().success((result)->
                     console.log('results', result.sessions.Session.session_id);
 
-                    session = OT.initSession(this.apiKey, result.sessions.Session.session_id);
+                    session = OT.initSession(server.apiKey, result.sessions.Session.session_id);
 
                     publisher = OT.initPublisher('myPublisherDiv');
 
