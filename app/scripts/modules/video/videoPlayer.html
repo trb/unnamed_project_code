@@ -1,7 +1,14 @@
 <div>
     <script src='http://static.opentok.com/webrtc/v2.2/js/opentok.min.js'></script>
     <button ng-click="startCall()">Start Call</button>
-    <h1>Awesome video feed!</h1>
-    <div id="myPublisherDiv"></div>
-    <div id="subscribersDiv"></div>
+    <button ng-click="joinCall()">Join Call</button>
+    <button ng-click="stopCall()">Stop Call</button>
+
+    <div id="myPublisherDiv"> This is where I publish</div>
+
+    <div id="subscribersDiv"> This is where I subscribe </div>
+
+    <div ng-repeat="device in devices">
+        {{ device.kind }} {{ device.deviceId }}
+    </div>
 </div>

@@ -8,6 +8,9 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
 
             server = {
                 apiKey: 45174472
+                sessionId: '2_MX40NTE3NDQ3Mn5-MTQyNTgzODcxNzEyMX5CWjNmUXJXQ2g5YUZ5MTZ0eFBvNXJtcDJ-fg'
+                token: 'T1==cGFydG5lcl9pZD00NTE3NDQ3MiZzaWc9YzdjZGE4ZTNlYzAwYjJiNDgwYzA4YmZhOThiZjQ4Njg5ZmI2OTM4Yzpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5URTNORFEzTW41LU1UUXlOVGd6T0RjeE56RXlNWDVDV2pObVVYSlhRMmc1WVVaNU1UWjBlRkJ2TlhKdGNESi1mZyZjcmVhdGVfdGltZT0xNDI3NjUzODQ2Jm5vbmNlPTAuNDY2NjAzMjcwOTI0OTA4Mw=='
+                session: {}
 
                 createSession: ->
                     request = {
@@ -26,28 +29,92 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
 
             $scope.startCall = ->
                 console.log('attempt to make contact');
+
                 server.createSession().success((result)->
                     console.log('results', result.sessions.Session.session_id);
+                    if (OT.checkSystemRequirements() == 1)
+                        server.session = OT.initSession(server.apiKey, server.sessionId);
 
-                    sessionId = '2_MX40NTE3NDQ3Mn5-MTQyNTgzODcxNzEyMX5CWjNmUXJXQ2g5YUZ5MTZ0eFBvNXJtcDJ-fg';
+                        server.session.on("sessionConnected", (sessionConnectEvent) ->
+                            console.log("sessionConnected executed");
 
-                    session = OT.initSession(server.apiKey, sessionId);
+                        );
 
-                    token = 'T1==cGFydG5lcl9pZD00NTE3NDQ3MiZzaWc9M2EyN2I4Mzg0YjJhNTRkNGNmZjIzMDU3OTFlMDg2MWNmYzA1NTkwZTpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5URTNORFEzTW41LU1UUXlOVGd6T0RjeE56RXlNWDVDV2pObVVYSlhRMmc1WVVaNU1UWjBlRkJ2TlhKdGNESi1mZyZjcmVhdGVfdGltZT0xNDI3MDUxMzQ1Jm5vbmNlPTAuMTUzNjczNzQxMjM2NTk2OTQ='
+                        server.session.connect(server.token, (error) ->
+                            if (error)
+                                console.log("Error connecting: ", error.code, error.message);
+                            else
+                                console.log("Connected to the session.");
+                                if (server.session.capabilities.publish == 1)
+                                    console.log('can publish');
+                                    OT.getDevices((error, devices) ->
 
-                    session.on({
-                        streamCreated: (event) ->
-                            session.subscribe(event.stream, 'subscribersDiv', {insertMode: 'append'});
-                    });
+                                        audioDevices = [];
+                                        videoDevices = [];
 
-                    session.connect(token, (error) ->
-                        if (error)
-                            console.log(error);
-                        else
-                            session.publish('myPublisherDiv', {width: 1920, height: 1080});
-                    );
+                                        console.log(arguments);
+                                        $scope.devices = devices;
+                                        $scope.$apply();
 
-                    console.log(session);
+                                        audioInputDevices = devices.filter((element) ->
+                                            return element.kind == "audioInput";
+                                        );
+                                        videoInputDevices = devices.filter((element) ->
+                                            return element.kind == "videoInput";
+                                        );
+                                        for device in audioInputDevices
+                                            audioDevices.push(device.deviceId);
+                                            console.log("audio input device: ", device.deviceId);
+
+                                        for device in videoInputDevices
+                                            videoDevices.push(device.deviceId);
+                                            console.log("video input device: ", device.deviceId);
+
+                                        pubOptions = {
+                                            #audioSource: audioDevices[1],
+                                            videoSource: videoDevices[1] #second camera on phone, will need to be able to select
+                                        };
+
+                                        console.log('publisher options', pubOptions);
+
+                                        publisher = OT.initPublisher('myPublisherDiv', pubOptions, (error) ->
+                                            if (error)
+                                                # The client cannot publish.
+                                                # You may want to notify the user.
+                                                console.log('unable to publish');
+                                            else
+                                                console.log('Publisher initialized.');
+                                        );
+
+                                        server.session.publish(publisher);
+
+                                        $scope.stopCall = () ->
+                                            server.session.unpublish(publisher);
+                                            console.log('this should stop the call');
+                                    );
+                                else
+                                    console.log('publish not available');
+                        );
+                );
+
+            $scope.joinCall = ->
+                console.log('join the call');
+                server.session = OT.initSession(server.apiKey, server.sessionId);
+
+                server.session.on("sessionConnected", (sessionConnectEvent) ->
+                    console.log("sessionConnected executed");
+                );
+
+                server.session.on("streamCreated", (streamCreatedEvent) ->
+                    console.log("streamCreated executed");
+                    server.session.subscribe(streamCreatedEvent.stream, 'myPublisherDiv');
+                );
+
+                server.session.connect(server.token, (error) ->
+                    if (error)
+                        console.log("Error connecting: ", error.code, error.message);
+                    else
+                        console.log("Connected to the session.");
                 );
     }
 ]
