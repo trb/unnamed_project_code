@@ -1,5 +1,6 @@
 app = angular.module('autonomyApp', [
     'ngRoute',
+    'Navigation',
     'Login',
     'Video'
 ])
@@ -11,7 +12,11 @@ app = angular.module('autonomyApp', [
                 name: 'DemoUser',
                 id: 1,
                 loggedIn: true,
-                permissions: ['StartCall', 'EndCall', 'ListShops', 'ListEmployees']
+                permissions:
+                  StartCall: true
+                  EndCall: true
+                  ListShops: true
+                  ListEmployees: true
             }
 ])
 
@@ -29,11 +34,9 @@ app = angular.module('autonomyApp', [
             if loginRequired && !user.loggedIn
                 authorizationResult.failedLogin = true
 
-            if _.difference(permissions, user.permissions).length > 0
+            if _.difference(permissions, _.keys(user.permissions)).length > 0
                 authorizationResult.failedPermissions = true
-                authorizationResult.missingPermissions = _.difference(permissions, user.permissions)
-
-            console.log('authorization result', authorizationResult, user, loginRequired, permissions)
+                authorizationResult.missingPermissions = _.difference(permissions, _.keys(user.permissions))
 
             return authorizationResult
 ])
@@ -50,6 +53,7 @@ app = angular.module('autonomyApp', [
             authorizationState = authorization.authorize(next.access.loginRequired, next.access.permissions)
 
             if authorizationState.failedLogin
+                console.log('login required', authorizationState)
                 event.preventDefault()
                 $rootScope.$evalAsync(->
                     $location.path('/login');
@@ -58,27 +62,31 @@ app = angular.module('autonomyApp', [
                 return
 
             if authorizationState.failedPermissions
-                console.log('missing permissions', authorizationState.missingPermissions)
+                console.log('missing permissions', authorizationState)
                 event.preventDefault()
                 return
         )
 ])
 
-.config(['$routeProvider',
-    ($routeProvider) ->
+.config([
+    '$routeProvider',
+    '$locationProvider',
+    ($routeProvider, $locationProvider) ->
         $routeProvider
-        .when('/video', {
-            templateUrl: 'views/modules/video/video.html',
-            access: {
-                loginRequired: true,
-                permissions: ['StartCall', 'EndCall']
-            }
-        })
-        .when('/login', {
-            templateUrl: 'views/modules/login/login.html',
-            controller:  'loginController'
-        })
-        .otherwise({
-            redirectTo: '/login'
-        })
+          .when('/video', {
+              templateUrl: 'views/modules/video/video.html',
+              access: {
+                  loginRequired: true,
+                  permissions: ['StartCall', 'EndCall']
+              }
+          })
+          .when('/login', {
+              templateUrl: 'views/modules/login/login.html',
+              controller:  'loginController'
+          })
+          .otherwise({
+              redirectTo: '/login'
+          })
+
+        $locationProvider.html5Mode(true)
 ])
