@@ -1,0 +1,42 @@
+$menu-brand: hsl(0, 0%, 93%);
+$menu-links: $menu-brand;
+$menu-background: hsl(0, 0%, 25%);
+
+$menu-active: hsl(144, 76%, 60%);;
+
+$menu-background-active: lighten($menu-background, 10%);
+$menu-background-hover: $menu-background-active;
+$menu-links-hover: darken($menu-links, 10%);
+
+html body {
+  .navbar-autonomy {
+    .navbar-brand {
+      color: $menu-brand;
+      font-family: 'Supermercado One', cursive;
+      font-size: 3rem;
+    }
+
+    background-color: $menu-background;
+
+    ul.navbar-nav > li.active > a {
+      color: $menu-active;
+      background-color: $menu-background-active;
+    }
+
+    .navbar-nav > li > a {
+      color: $menu-links;
+      font-weight: 600;
+      font-size: 1.5rem;
+
+      &:hover {
+        color: $menu-links-hover;
+        background-color: $menu-background-hover;
+      }
+
+      &:focus {
+        color: $menu-links;
+        background-color: $menu-background;
+      }
+    }
+  }
+}
