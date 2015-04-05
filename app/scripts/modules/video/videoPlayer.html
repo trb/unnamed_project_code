@@ -4,9 +4,8 @@
     <button ng-click="joinCall()">Join Call</button>
     <button ng-click="stopCall()">Stop Call</button>
 
-    <div id="myPublisherDiv"> This is where I publish</div>
-
-    <div id="subscribersDiv"> This is where I subscribe </div>
+    <div id="host"></div>
+    <div id="guest"> we don't want this to show</div>
 
     <div ng-repeat="device in devices">
         {{ device.kind }} {{ device.deviceId }}

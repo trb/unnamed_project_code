@@ -9,11 +9,11 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
             server = {
                 apiKey: 45174472
                 sessionId: '2_MX40NTE3NDQ3Mn5-MTQyNTgzODcxNzEyMX5CWjNmUXJXQ2g5YUZ5MTZ0eFBvNXJtcDJ-fg'
-                token: 'T1==cGFydG5lcl9pZD00NTE3NDQ3MiZzaWc9YzdjZGE4ZTNlYzAwYjJiNDgwYzA4YmZhOThiZjQ4Njg5ZmI2OTM4Yzpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5URTNORFEzTW41LU1UUXlOVGd6T0RjeE56RXlNWDVDV2pObVVYSlhRMmc1WVVaNU1UWjBlRkJ2TlhKdGNESi1mZyZjcmVhdGVfdGltZT0xNDI3NjUzODQ2Jm5vbmNlPTAuNDY2NjAzMjcwOTI0OTA4Mw=='
+                token: 'T1==cGFydG5lcl9pZD00NTE3NDQ3MiZzaWc9NDNlZWMxY2YzNTc0YmY3ZjMyODlhMTMyOWZjNzlmZWRlOGJmZTA2NTpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5URTNORFEzTW41LU1UUXlOVGd6T0RjeE56RXlNWDVDV2pObVVYSlhRMmc1WVVaNU1UWjBlRkJ2TlhKdGNESi1mZyZjcmVhdGVfdGltZT0xNDI4MjU1ODY1Jm5vbmNlPTAuOTYzOTA4MjA5MTU5NzEwMSZleHBpcmVfdGltZT0xNDI4MzQyMjY1'
                 session: {}
 
                 createSession: ->
-                    request = {
+                    reguest = {
                         method: 'POST',
                         url: 'https://api.opentok.com/session/create',
                         headers: {
@@ -24,7 +24,7 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                             json = x2js.xml_str2json(data);
                     }
 
-                    $http(request);
+                    $http(reguest);
             }
 
             $scope.startCall = ->
@@ -38,6 +38,11 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                         server.session.on("sessionConnected", (sessionConnectEvent) ->
                             console.log("sessionConnected executed");
 
+                        );
+
+                        server.session.on("streamCreated", (streamCreatedEvent) ->
+                            console.log("streamCreated executed");
+                            server.session.subscribe(streamCreatedEvent.stream, 'guest');
                         );
 
                         server.session.connect(server.token, (error) ->
@@ -72,12 +77,15 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
 
                                         pubOptions = {
                                             #audioSource: audioDevices[1],
-                                            videoSource: videoDevices[1] #second camera on phone, will need to be able to select
+                                            videoSource: videoDevices[1], #second camera on phone, will need to be able to select
+                                            mirror: false,
+                                            width: 598,
+                                            height: 360
                                         };
 
                                         console.log('publisher options', pubOptions);
 
-                                        publisher = OT.initPublisher('myPublisherDiv', pubOptions, (error) ->
+                                        publisher = OT.initPublisher('host', pubOptions, (error) ->
                                             if (error)
                                                 # The client cannot publish.
                                                 # You may want to notify the user.
@@ -107,7 +115,7 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
 
                 server.session.on("streamCreated", (streamCreatedEvent) ->
                     console.log("streamCreated executed");
-                    server.session.subscribe(streamCreatedEvent.stream, 'myPublisherDiv');
+                    server.session.subscribe(streamCreatedEvent.stream, 'host');
                 );
 
                 server.session.connect(server.token, (error) ->
@@ -115,6 +123,28 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                         console.log("Error connecting: ", error.code, error.message);
                     else
                         console.log("Connected to the session.");
+                        if (server.session.capabilities.publish == 1)
+
+                            pubOptions = {
+                                videoSource: null
+                            };
+
+                            console.log('publisher options', pubOptions);
+
+                            publisher = OT.initPublisher('guest', pubOptions, (error) ->
+                                if (error)
+                                    console.log('unable to publish');
+                                else
+                                    console.log('Publisher initialized.');
+                            );
+
+                            server.session.publish(publisher);
+
+                            $scope.stopCall = () ->
+                                server.session.unpublish(publisher);
+                                console.log('this should stop the call');
+                        else
+                        console.log('publish not available');
                 );
     }
 ]
