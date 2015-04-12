@@ -2,12 +2,33 @@
     <div class="col-xs-12 col-sm-8 col-lg-6 col-sm-offset-2 col-lg-offset-3">
         <h1>Please, log in</h1>
 
-        <form>
-            <label>Name:</label>
-            <input type="text">
+        <form name="loginForm">
+            <div class="form-group"
+                 ng-class="{'has-error': loginForm.email.$invalid}">
+                <label for="email">Email:</label>
+                <input id="email"
+                       class="form-control"
+                       ng-model="email"
+                       placeholder="Email"
+                       name="email"
+                       type="email">
+            </div>
 
-            <label>Password:</label>
-            <input type="text">
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input id="password"
+                       class="form-control"
+                       ng-model="password"
+                       placeholder="Password"
+                       name="password"
+                       type="password">
+            </div>
+
+            <button class="btn btn-primary"
+                    ng-click="login()"
+                    type="submit">
+                Login
+            </button>
         </form>
     </div>
 </div>

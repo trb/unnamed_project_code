@@ -1,0 +1,12 @@
+$button-primary: hsl(140, 59%, 45%);
+
+.btn.btn-primary {
+  outline: none;
+  background-color: $button-primary;
+  border-color: darken($button-primary, 10%);
+
+  &:hover {
+    background-color: darken($button-primary, 10%);
+    border-color: darken($button-primary, 20%);
+  }
+}
