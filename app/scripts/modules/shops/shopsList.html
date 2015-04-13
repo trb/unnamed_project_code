@@ -1,0 +1,70 @@
+<form id="shops_search_form"
+      class="form-horizontal"
+      name="shopsSearch">
+    <div class="form-group form-group-lg">
+        <label class="col-xs-2 control-label"
+               for="shop_query">
+            Search:
+        </label>
+        <div class="col-xs-8">
+            <input id="shop_query"
+                   class="form-control"
+                   name="searchQuery"
+                   ng-model="shops.searchQuery"
+                   ng-change="shops.search(this)"
+                   type="text"
+                   placeholder="Shop name or contact name">
+        </div>
+
+        <div class="col-xs-2">
+            <button class="btn btn-default btn-lg"
+                    type="submit"
+                    ng-click="shops.search(this)">
+                Search
+            </button>
+        </div>
+    </div>
+</form>
+
+<ol class="list-unstyled"
+    ng-controller="VideoController as video">
+    <li ng-repeat="shop in shops.shops.list"
+        class="card shop"
+        ng-class="
+            {
+                opened: shops.openList[shop.id] || shops.autoOpenList[shop.id],
+                closed: !shops.openList[shop.id] && !shops.autoOpenList[shop.id]
+            }
+        ">
+        <h3>
+            <a ng-click="shops.toggle(shop.id)">
+                {{ shop.name }}
+            </a>
+            <span class="glyphicon glyphicon-play indicator"></span>
+        </h3>
+        <small>
+            {{ shop.location.address }}, {{ shop.location.city }}
+        </small>
+
+        <div class="extended-info">
+            <h4>Contacts:</h4>
+            <ol class="list-unstyled">
+                <li ng-repeat="contact in shop.contacts"
+                    class="contact">
+                    <h5>
+                        {{ contact.name }}
+                        <button ng-class="{
+                                    disabled: contact.status != 'available',
+                                    'btn-primary': contact.status == 'available'
+                                }"
+                                class="btn btn-xs btn-default"
+                                ng-click="video.call(contact.id)">
+                            Call
+                        </button>
+                    </h5>
+                    <small>{{ contact.role }}</small>
+                </li>
+            </ol>
+        </div>
+    </li>
+</ol>

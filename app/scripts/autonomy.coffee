@@ -2,7 +2,8 @@ app = angular.module('autonomyApp', [
     'ngRoute',
     'Navigation',
     'Login',
-    'Video'
+    'Video',
+    'Shops'
 ])
 
 .service('Authentication', [
@@ -84,8 +85,11 @@ app = angular.module('autonomyApp', [
               templateUrl: 'views/modules/login/login.html',
               controller:  'loginController'
           })
+          .when('/shops', {
+            templateUrl: 'views/modules/shops/shops.html'
+          })
           .otherwise({
-              redirectTo: '/login'
+              redirectTo: '/shops'
           })
 
         $locationProvider.html5Mode(true)

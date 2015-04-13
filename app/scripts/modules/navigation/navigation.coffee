@@ -24,3 +24,13 @@ angular.module('Navigation', [])
 
       templateUrl: '/views/modules/navigation/navigation.html'
   ])
+
+  .directive('navigationItem', [
+    ->
+      restrict: 'E'
+      scope:
+        url: '@'
+      replace: true
+      transclude: true
+      templateUrl: '/views/modules/navigation/menuItem.html'
+  ])
