@@ -1,5 +1,11 @@
 video = angular.module 'Video', []
 
+video.controller('VideoController', [
+  ->
+    this.call = (id) ->
+      console.log('call', id)
+])
+
 video.directive 'videoPlayer', [ '$http', ($http) ->
     {
         restrict: 'E',

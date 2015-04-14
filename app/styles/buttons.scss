@@ -10,3 +10,14 @@ $button-primary: hsl(140, 59%, 45%);
     border-color: darken($button-primary, 20%);
   }
 }
+
+html body {
+  .btn:active,
+  .btn:focus,
+  .btn.active,
+  .btn.focus,
+  .btn:active:focus,
+  .btn.active.focus {
+    outline: none;
+  }
+}
