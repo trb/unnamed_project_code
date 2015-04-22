@@ -21,3 +21,10 @@ html body {
     outline: none;
   }
 }
+
+.btn-off-air {
+    position: absolute;
+    z-index: 100;
+    right: 0;
+    top: 10px;
+}
