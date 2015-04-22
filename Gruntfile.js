@@ -86,7 +86,7 @@ module.exports = function (grunt) {
         options: {
           middleware: function(connect) {
             return [
-              modRewrite(['!\\.html|\\.js|\\.svg|\\.css|\\.png$ /index.html [L]']),
+              modRewrite(['!\\.html|\\.js|\\.woff|\\.woff2||.ttf|\\.svg|\\.css|\\.png$ /index.html [L]']),
               connect.static('.tmp'),
               connect().use('/bower_components', connect.static('./bower_components')),
               connect.static(config.app)
@@ -298,9 +298,9 @@ module.exports = function (grunt) {
           collapseBooleanAttributes: true,
           collapseWhitespace: true,
           conservativeCollapse: true,
-          removeAttributeQuotes: true,
+          removeAttributeQuotes: false,
           removeCommentsFromCDATA: true,
-          removeEmptyAttributes: true,
+          removeEmptyAttributes: false,
           removeOptionalTags: true,
           removeRedundantAttributes: true,
           useShortDoctype: true
@@ -358,10 +358,16 @@ module.exports = function (grunt) {
           src: 'node_modules/apache-server-configs/dist/.htaccess',
           dest: '<%= config.dist %>/.htaccess'
         }, {
+            expand: true,
+            dot: true,
+            cwd: '.',
+            src: 'bower_components/bootstrap-sass-official/assets/fonts/bootstrap/*',
+            dest: '<%= config.dist %>'
+        }, {
           expand: true,
           dot: true,
           cwd: '.',
-          src: 'bower_components/bootstrap-sass-official/assets/fonts/bootstrap/*',
+          src: 'bower_components/fontawesome/fonts/*',
           dest: '<%= config.dist %>'
         }]
       },
