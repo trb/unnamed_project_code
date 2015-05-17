@@ -17,8 +17,9 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
             server = {
                 apiKey: 45214212
                 sessionId: '1_MX40NTIxNDIxMn5-MTQyOTQ3MTM0NTcwMX5tZWQrK1lNOWozU2ZyMk9DcnRIU1hQQVJ-fg'
-                token: 'T1==cGFydG5lcl9pZD00NTIxNDIxMiZzaWc9ZGU3MGNjNWFmMmU3MWE0Zjc1ZGVjZWRmMzljMjgxNmVmMjRiOWE1Yzpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTFfTVg0ME5USXhOREl4TW41LU1UUXlPVFEzTVRNME5UY3dNWDV0WldRcksxbE5PV296VTJaeU1rOURjblJJVTFoUVFWSi1mZyZjcmVhdGVfdGltZT0xNDI5NjcxMTU3Jm5vbmNlPTAuNjg2NzExNDExNzM2MDYxNA=='
+                token: 'T1==cGFydG5lcl9pZD00NTIxNDIxMiZzaWc9NmNlNmNmYjk5Y2FlNzEwNTA3M2Y1ZDYxODc5NjY4MjRhNjBlYWNiMDpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTFfTVg0ME5USXhOREl4TW41LU1UUXlPVFEzTVRNME5UY3dNWDV0WldRcksxbE5PV296VTJaeU1rOURjblJJVTFoUVFWSi1mZyZjcmVhdGVfdGltZT0xNDMxODg2MDk5Jm5vbmNlPTAuNzc4OTY0NTI3MzI5NzQ='
                 session: {}
+                publisher: null
 
                 createSession: ->
                     request = {
@@ -55,7 +56,6 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                     #only publish audio
                     pubOptions = {
                         publishVideo: false, #disable the video stream
-                        showControls: false,
                         height: 1,
                         width: 1
                     };
@@ -74,6 +74,13 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                     return publisher;
             }
 
+            $scope.stopCall = () ->
+                $scope.onAir = false;
+                server.session.unpublish(server.publisher);
+                server.session.unsubscribe(server.currentStream);
+                server.session.disconnect();
+                console.log('this should stop the call');
+
             $scope.startCall = ->
                 $scope.onAir = true;
 
@@ -88,12 +95,16 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
 
                         server.session.on("sessionConnected", (sessionConnectEvent) ->
                             console.log("sessionConnected executed");
-
                         );
 
                         server.session.on("streamCreated", (streamCreatedEvent) ->
                             console.log("streamCreated executed");
                             server.session.subscribe(streamCreatedEvent.stream, videoController.getSubscriptionType());
+                            server.currentStream = streamCreatedEvent.stream;
+                        );
+
+                        server.session.on("sessionDestroyed", (stream) ->
+                            console.log("sessionDestroyed executed");
                         );
 
                         server.session.connect(server.token, (error) ->
@@ -136,7 +147,7 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
 
                                         console.log('publisher options', pubOptions);
 
-                                        publisher = OT.initPublisher(videoController.getPublisherType(), pubOptions, (error) ->
+                                        server.publisher = OT.initPublisher(videoController.getPublisherType(), pubOptions, (error) ->
                                             if (error)
                                                 # The client cannot publish.
                                                 # You may want to notify the user.
@@ -145,12 +156,7 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                                                 console.log('Publisher initialized.');
                                         );
 
-                                        server.session.publish(publisher);
-
-                                        $scope.stopCall = () ->
-                                            $scope.onAir = false;
-                                            server.session.unpublish(publisher);
-                                            console.log('this should stop the call');
+                                        server.session.publish(server.publisher);
                                     );
                                 else
                                     console.log('publish not available');
@@ -158,6 +164,8 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                 );
 
             $scope.joinCall = ->
+                $scope.onAir = true;
+
                 videoController.connectAs('guest');
 
                 console.log('join the call');
@@ -173,6 +181,11 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                         height: window.innerHeight,
                         width: window.innerWidth
                     });
+                    server.currentStream = streamCreatedEvent.stream;
+                );
+
+                server.session.on("sessionDestroyed", (stream) ->
+                    console.log("sessionDestroyed executed");
                 );
 
                 server.session.connect(server.token, (error) ->
@@ -183,10 +196,6 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                         if (server.session.capabilities.publish == 1)
 
                             publisher = videoController.publishAudioOnly();
-
-                            $scope.stopCall = () ->
-                                server.session.unpublish(publisher);
-                                console.log('this should stop the call');
                         else
                         console.log('publish not available');
                 );

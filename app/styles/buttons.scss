@@ -23,8 +23,12 @@ html body {
 }
 
 .btn-off-air {
+    margin-top: 10px;
+}
+
+.btn-on-air {
     position: absolute;
     z-index: 100;
-    right: 0;
+    right: 10px;
     top: 10px;
 }
