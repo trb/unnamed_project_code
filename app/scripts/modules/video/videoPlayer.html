@@ -1,28 +1,4 @@
-<script src='http://static.opentok.com/webrtc/v2.2/js/opentok.min.js'></script>
-<div class="row" ng-if="!onAir">
-    <div class="col-xs-4 col-xs-offset-4">
-        <button class="btn btn-primary"
-                ng-click="startCall()">
-            Start Call
-        </button>
-        <button class="btn btn-default"
-                ng-click="joinCall()">
-            Join Call
-        </button>
-        <button class="btn btn-default"
-                ng-click="stopCall()">
-            Stop Call
-        </button>
-    </div>
-</div>
-
-<div ng-if="onAir">
-    <button class="btn btn-default btn-off-air"
-            ng-click="stopCall()">
-        Stop Call
-    </button>
-</div>
-
+<script src='//static.opentok.com/v2/js/opentok.min.js'></script>
 <div class="row">
     <div id="myPublisherDiv"
          class="col-xs-6">
@@ -30,4 +6,24 @@
     <div id="subscribersDiv"
          class="col-xs-6">
     </div>
+</div>
+
+<div class="row" ng-if="!onAir">
+    <div class="col-xs-4 col-xs-offset-4">
+        <button class="btn btn-primary btn-off-air"
+                ng-click="startCall()">
+            Start Call
+        </button>
+        <button class="btn btn-default btn-off-air"
+                ng-click="joinCall()">
+            Join Call
+        </button>
+    </div>
+</div>
+
+<div ng-if="onAir">
+    <button class="btn btn-default btn-on-air"
+            ng-click="stopCall()">
+        Stop Call
+    </button>
 </div>
