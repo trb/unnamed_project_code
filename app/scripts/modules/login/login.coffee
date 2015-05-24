@@ -9,5 +9,5 @@ angular.module('Login', [])
 
       $scope.login = ->
         if $scope.email != '' && $scope.password != ''
-          $location.url('/video')
+          $location.url('/shops')
   ])

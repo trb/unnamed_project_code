@@ -5,17 +5,20 @@
             <button type="button"
                     class="navbar-toggle collapsed"
                     data-toggle="collapse"
-                    data-target="#bs-example-navbar-collapse-1">
+                    data-target="#autonomy_navigation">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Autonomy</a>
+            <a class="navbar-brand"
+               href="/">
+                Autonomy
+            </a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <div class="collapse navbar-collapse" id="autonomy_navigation">
             <ul class="nav navbar-nav">
                 <navigation-item url="/shops">
                     Shops
@@ -26,7 +29,11 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a href="/login">Logout</a>
+                    <a data-toggle="collapse"
+                       data-target="#autonomy_navigation"
+                       href="/login">
+                        Logout
+                    </a>
                 </li>
             </ul>
         </div>
