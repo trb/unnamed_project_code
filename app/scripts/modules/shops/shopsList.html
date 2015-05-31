@@ -2,11 +2,7 @@
       class="form-horizontal"
       name="shopsSearch">
     <div class="form-group form-group-lg">
-        <label class="col-xs-2 control-label"
-               for="shop_query">
-            Search:
-        </label>
-        <div class="col-xs-8">
+        <div class="col-xs-10 col-xs-offset-1">
             <input id="shop_query"
                    class="form-control"
                    name="searchQuery"
@@ -14,14 +10,6 @@
                    ng-change="shops.search(this)"
                    type="text"
                    placeholder="Shop name or contact name">
-        </div>
-
-        <div class="col-xs-2">
-            <button class="btn btn-default btn-lg"
-                    type="submit"
-                    ng-click="shops.search(this)">
-                Search
-            </button>
         </div>
     </div>
 </form>
