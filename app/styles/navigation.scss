@@ -23,6 +23,20 @@ html body {
       background-color: $menu-background-active;
     }
 
+    .navbar-toggle {
+      background-color: darken($menu-background, 10%);
+      border: 1px solid lighten($menu-background, 20%);
+      cursor: pointer;
+    }
+
+    .icon-bar {
+      background-color: lighten($menu-background, 20%);
+    }
+
+    .navbar-nav li {
+      cursor: pointer;
+    }
+
     .navbar-nav > li > a {
       color: $menu-links;
       font-weight: 600;
