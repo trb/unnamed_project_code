@@ -16,8 +16,8 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
 
             server = {
                 apiKey: 45214212
-                sessionId: '1_MX40NTIxNDIxMn5-MTQyOTQ3MTM0NTcwMX5tZWQrK1lNOWozU2ZyMk9DcnRIU1hQQVJ-fg'
-                token: 'T1==cGFydG5lcl9pZD00NTIxNDIxMiZzaWc9NmNlNmNmYjk5Y2FlNzEwNTA3M2Y1ZDYxODc5NjY4MjRhNjBlYWNiMDpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTFfTVg0ME5USXhOREl4TW41LU1UUXlPVFEzTVRNME5UY3dNWDV0WldRcksxbE5PV296VTJaeU1rOURjblJJVTFoUVFWSi1mZyZjcmVhdGVfdGltZT0xNDMxODg2MDk5Jm5vbmNlPTAuNzc4OTY0NTI3MzI5NzQ='
+                sessionId: '1_MX40NTIxNDIxMn5-MTQzMzA5NzIxODA2MX5PN1ZLVGNlS1I2Yzc5STJWM3NuUGFiaTZ-fg'
+                token: 'T1==cGFydG5lcl9pZD00NTIxNDIxMiZzaWc9ZmVkYTQ5ZDY3ODk0MGUxZWQ0OWI2NWNmM2ZlN2M5YmViZjJhYzA1ZTpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTFfTVg0ME5USXhOREl4TW41LU1UUXpNekE1TnpJeE9EQTJNWDVQTjFaTFZHTmxTMUkyWXpjNVNUSldNM051VUdGaWFUWi1mZyZjcmVhdGVfdGltZT0xNDMzMDk3MjIyJm5vbmNlPTAuMzA5ODAxMzk5NzE1NjU0OCZleHBpcmVfdGltZT0xNDM1Njg4OTA5JmNvbm5lY3Rpb25fZGF0YT0='
                 session: {}
                 publisher: null
 
@@ -52,7 +52,7 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
 
                 publishAudioAndVideo: (mode) ->
 
-                publishAudioOnly: () ->
+                publishAudioOnly: (server) ->
                     #only publish audio
                     pubOptions = {
                         publishVideo: false, #disable the video stream
@@ -72,14 +72,15 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                     server.session.publish(publisher);
 
                     return publisher;
+
+                disconnect: (server) ->
+                    server.session.unpublish(server.publisher);
+                    server.session.unsubscribe(server.subscriber);
             }
 
             $scope.stopCall = () ->
                 $scope.onAir = false;
-                server.session.unpublish(server.publisher);
-                server.session.unsubscribe(server.currentStream);
-                server.session.disconnect();
-                console.log('this should stop the call');
+                videoController.disconnect(server);
 
             $scope.startCall = ->
                 $scope.onAir = true;
@@ -89,7 +90,8 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                 console.log('attempt to make contact');
 
                 server.createSession().success((result)->
-                    console.log('results', result.sessions.Session.session_id);
+                    ######console.log('results', result.sessions.Session.session_id);
+                    console.log('session created');
                     if (OT.checkSystemRequirements() == 1)
                         server.session = OT.initSession(server.apiKey, server.sessionId);
 
@@ -99,8 +101,7 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
 
                         server.session.on("streamCreated", (streamCreatedEvent) ->
                             console.log("streamCreated executed");
-                            server.session.subscribe(streamCreatedEvent.stream, videoController.getSubscriptionType());
-                            server.currentStream = streamCreatedEvent.stream;
+                            server.subscriber = server.session.subscribe(streamCreatedEvent.stream, videoController.getSubscriptionType());
                         );
 
                         server.session.on("sessionDestroyed", (stream) ->
@@ -177,11 +178,10 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
 
                 server.session.on("streamCreated", (streamCreatedEvent) ->
                     console.log("streamCreated executed");
-                    server.session.subscribe(streamCreatedEvent.stream, videoController.getSubscriptionType(), {
+                    server.subscriber = server.session.subscribe(streamCreatedEvent.stream, videoController.getSubscriptionType(), {
                         height: window.innerHeight,
                         width: window.innerWidth
                     });
-                    server.currentStream = streamCreatedEvent.stream;
                 );
 
                 server.session.on("sessionDestroyed", (stream) ->
@@ -195,7 +195,7 @@ video.directive 'videoPlayer', [ '$http', ($http) ->
                         console.log("Connected to the session.");
                         if (server.session.capabilities.publish == 1)
 
-                            publisher = videoController.publishAudioOnly();
+                            server.publisher = videoController.publishAudioOnly(server);
                         else
                         console.log('publish not available');
                 );
