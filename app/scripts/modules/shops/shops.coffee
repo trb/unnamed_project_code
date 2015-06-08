@@ -87,8 +87,9 @@ angular.module('Shops', ['Video'])
   ])
 
   .directive('shopsList', [
+    '$location',
     'Shops'
-    (shops) ->
+    ($location, shops) ->
       controller: ->
         this.openList = {}
         this.autoOpenList = {}
@@ -122,6 +123,10 @@ angular.module('Shops', ['Video'])
             delete this.openList[id]
           else
             this.openList[id] = true
+
+        this.startCall = (id) ->
+          $location.url('/video?call=' + id)
+
       controllerAs: 'shops'
       restrict: 'E'
       scope: {}

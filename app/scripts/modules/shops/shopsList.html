@@ -14,8 +14,7 @@
     </div>
 </form>
 
-<ol class="list-unstyled"
-    ng-controller="VideoController as video">
+<ol class="list-unstyled">
     <li ng-repeat="shop in shops.shops.list"
         class="card shop"
         ng-class="
@@ -47,7 +46,7 @@
                                     'btn-primary': contact.status == 'available'
                                 }"
                                 class="btn btn-xs btn-default"
-                                ng-click="video.call(contact.id)">
+                                ng-click="shops.startCall(contact.id)">
                             Call
                         </button>
                     </h5>
