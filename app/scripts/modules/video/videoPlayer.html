@@ -1,29 +1,32 @@
 <script src='//static.opentok.com/v2/js/opentok.min.js'></script>
-<div class="row">
-    <div id="myPublisherDiv"
-         class="col-xs-6">
-    </div>
-    <div id="subscribersDiv"
-         class="col-xs-6">
-    </div>
-</div>
 
-<div class="row" ng-if="!onAir">
+
+<div id="video_menu" class="row">
     <div class="col-xs-4 col-xs-offset-4">
         <button class="btn btn-primary btn-off-air"
+                ng-if="!onAir"
                 ng-click="startCall()">
             Call
         </button>
         <button class="btn btn-default btn-off-air"
+                ng-if="!onAir"
                 ng-click="joinCall()">
             Answer
+        </button>
+
+        <button class="btn btn-default btn-on-air"
+                ng-if="onAir"
+                ng-click="stopCall()">
+            Hang-up
         </button>
     </div>
 </div>
 
-<div ng-if="onAir">
-    <button class="btn btn-default btn-on-air"
-            ng-click="stopCall()">
-        Hang-up
-    </button>
+<div class="row">
+    <div id="video"
+         class="col-xs-12">
+    </div>
+</div>
+
+<div id="audio">
 </div>
