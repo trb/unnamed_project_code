@@ -354,21 +354,30 @@ module.exports = function (grunt) {
             '{,*/}*.html',
             'styles/fonts/{,*/}*.*'
           ]
-        }, {
+        },
+        {
           src: 'node_modules/apache-server-configs/dist/.htaccess',
           dest: '<%= config.dist %>/.htaccess'
-        }, {
+        },
+        {
             expand: true,
             dot: true,
-            cwd: '.',
-            src: 'bower_components/bootstrap-sass-official/assets/fonts/bootstrap/*',
-            dest: '<%= config.dist %>'
-        }, {
+            cwd: 'bower_components/bootstrap-sass-official/assets/fonts/bootstrap',
+            src: '*',
+            dest: '<%= config.dist %>/fonts'
+        },
+        {
           expand: true,
           dot: true,
-          cwd: '.',
-          src: 'bower_components/fontawesome/fonts/*',
-          dest: '<%= config.dist %>'
+          cwd: 'bower_components/fontawesome/fonts',
+          src: '*',
+          dest: '<%= config.dist %>/fonts'
+        },
+        {
+          expand: true,
+          cwd: '<%= config.app %>/scripts',
+          src: '**/*.html',
+          dest: '<%= config.dist %>/views'
         }]
       },
       styles: {
