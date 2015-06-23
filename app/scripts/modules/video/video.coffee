@@ -10,9 +10,9 @@ video.directive('videoPlayer', [
             $scope.onAir = false;
 
             server = {
-                apiKey: 45214212
-                sessionId: '1_MX40NTIxNDIxMn5-MTQzMzA5NzIxODA2MX5PN1ZLVGNlS1I2Yzc5STJWM3NuUGFiaTZ-fg'
-                token: 'T1==cGFydG5lcl9pZD00NTIxNDIxMiZzaWc9ZmVkYTQ5ZDY3ODk0MGUxZWQ0OWI2NWNmM2ZlN2M5YmViZjJhYzA1ZTpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTFfTVg0ME5USXhOREl4TW41LU1UUXpNekE1TnpJeE9EQTJNWDVQTjFaTFZHTmxTMUkyWXpjNVNUSldNM051VUdGaWFUWi1mZyZjcmVhdGVfdGltZT0xNDMzMDk3MjIyJm5vbmNlPTAuMzA5ODAxMzk5NzE1NjU0OCZleHBpcmVfdGltZT0xNDM1Njg4OTA5JmNvbm5lY3Rpb25fZGF0YT0='
+                apiKey: '45174472'
+                sessionId: '1_MX40NTE3NDQ3Mn5-MTQzNTAxMTk0MTM1NH5OeG9iOTI0RFFYUTZsVERsQStDeUtLNDR-fg'
+                token: 'T1==cGFydG5lcl9pZD00NTE3NDQ3MiZzaWc9NGVmMGVjZWNkNzRiYTJkMDliZjNlYWM1OWYyYzlkMjIxY2Q4NGI0Mzpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTFfTVg0ME5URTNORFEzTW41LU1UUXpOVEF4TVRrME1UTTFOSDVPZUc5aU9USTBSRkZZVVRac1ZFUnNRU3REZVV0TE5EUi1mZyZjcmVhdGVfdGltZT0xNDM1MDExOTQ1Jm5vbmNlPTAuOTMxNTExNDUxNTUyNzA1MSZleHBpcmVfdGltZT0xNDM3NjAzOTM3JmNvbm5lY3Rpb25fZGF0YT0='
                 session: {}
 
                 hostVideoAndAudioSubscriber: null
@@ -66,24 +66,30 @@ video.directive('videoPlayer', [
                             console.log('publish not available')
                             return
 
-                        pubOptions = {
-                            publishVideo: false, #disable the video stream
-                            height: 1,
-                            width: 1
-                        }
+                        OT.getDevices((error, devices) ->
+                            console.log('host devices', devices)
 
-                        console.log('publisher options', pubOptions);
+                            pubOptions = {
+                                publishVideo: false, #disable the video stream
+                                videoSource: null,
+                                audioSource: devices[0],
+                                height: 1,
+                                width: 1
+                            }
 
-                        publisher = OT.initPublisher('audio', pubOptions, (error) ->
-                            if (error)
-                                console.log('unable to publish')
-                            else
-                                console.log('Publisher initialized.')
+                            console.log('publisher options', pubOptions);
+
+                            publisher = OT.initPublisher('audio', pubOptions, (error) ->
+                                if (error)
+                                    console.log('unable to publish')
+                                else
+                                    console.log('Publisher initialized.')
+                            )
+
+                            server.session.publish(publisher)
+
+                            server.hostAudioPublisher = publisher
                         )
-
-                        server.session.publish(publisher)
-
-                        server.hostAudioPublisher = publisher
                     )
 
                 setupHost: ->
@@ -112,15 +118,15 @@ video.directive('videoPlayer', [
 
                 startCall: ->
                     console.log('v', 'start call')
-                    server.createSession().success(->
-                        if OT.checkSystemRequirements() != 1
-                            console.log('v', 'System requirements failed')
-                            return
+#                    server.createSession().success(->
+                    if OT.checkSystemRequirements() != 1
+                        console.log('v', 'System requirements failed')
+                        return
 
-                        console.log('v', 'session created')
-                        server.session = OT.initSession(server.apiKey, server.sessionId)
-                        videoController.setupHost()
-                    )
+                    console.log('v', 'session created')
+                    server.session = OT.initSession(server.apiKey, server.sessionId)
+                    videoController.setupHost()
+#                    )
 
                 publishGuest: ->
                     server.session.connect(server.token, (error) ->
@@ -160,6 +166,8 @@ video.directive('videoPlayer', [
                                 #audioSource: audioDevices[1],
                                 videoSource: videoDevices[1], #second camera on phone, will need to be able to select
                                 mirror: false,
+                                resolution: '1280x720',
+                                frameRate: 30,
                                 height: videoController.calculateVideoHeight(),
                                 width: videoController.calculateVideoWidth()
                             }
@@ -185,8 +193,14 @@ video.directive('videoPlayer', [
                     )
 
                     server.session.on("streamCreated", (streamCreatedEvent) ->
-                        console.log("streamCreated executed")
-                        server.guestAudioSubscriber = server.session.subscribe(streamCreatedEvent.stream, 'audio');
+                        console.log("streamCreated executed, listening to host audio")
+                        server.guestAudioSubscriber = server.session.subscribe(
+                            streamCreatedEvent.stream,
+                            'audio',
+                                subscribeToAudio: true
+                                subscribeToVideo: false
+                        );
+                        console.log('subscriber, guest audio', server.guestAudioSubscriber);
                     )
 
                     server.session.on("sessionDestroyed", (stream) ->
@@ -197,14 +211,14 @@ video.directive('videoPlayer', [
 
                 joinCall: ->
                     console.log('v', 'join call')
-                    server.createSession().success(->
-                        if OT.checkSystemRequirements() != 1
-                            console.log('v', 'System requirements failed')
-                            return
+#                    server.createSession().success(->
+                    if OT.checkSystemRequirements() != 1
+                        console.log('v', 'System requirements failed')
+                        return
 
-                        server.session = OT.initSession(server.apiKey, server.sessionId)
-                        videoController.setupGuest()
-                    )
+                    server.session = OT.initSession(server.apiKey, server.sessionId)
+                    videoController.setupGuest()
+#                    )
             }
 
             $scope.stopCall = () ->
