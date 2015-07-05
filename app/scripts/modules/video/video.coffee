@@ -37,8 +37,18 @@ video.directive('videoPlayer', [
             }
 
             videoController = {
+                onAir: ->
+                    $('nav').css('display', 'none')
+                    $('#menu_controller').css('display', 'none')
+                    $("#video_player").css({ position: 'fixed' })
+
+                offAir: ->
+                    $('nav').css('display', 'block')
+                    $('#menu_controller').css('display', 'block')
+                    $("#video_player").css({ position: 'relative' })
+
                 calculateVideoHeight: ->
-                    return $(window).innerHeight() - $('nav').outerHeight() - $('#menu_controller').outerHeight()
+                    return $(window).innerHeight()
 
                 calculateVideoWidth: ->
                     return $('#video').innerWidth()
@@ -57,6 +67,23 @@ video.directive('videoPlayer', [
                         server.session.unpublish(server.guestVideoAndAudioPublisher)
 
                 publishHost: ->
+#                    this is how we would allow users to set their devices
+#
+#                    element = document.querySelector('#hardware-setup');
+#
+#                    options = {
+#                        insertMode: 'append'
+#                    };
+#
+#                    component = createOpentokHardwareSetupComponent(document.querySelector('#hardware-setup'), options, (error) ->
+#                        if (error)
+#                            console.error('Error: ', error);
+#                            element.innerHTML = '<strong>Error getting devices</strong>: '
+#                            error.message
+#                            return
+#                    # Add a button to call component.destroy() to close the component.
+#                    )
+
                     server.session.connect(server.token, (error) ->
                         if (error)
                             console.log("Error connecting: ", error.code, error.message);
@@ -221,20 +248,31 @@ video.directive('videoPlayer', [
 #                    )
             }
 
+            $scope.$watch('onAir', (broadcasting) ->
+                if broadcasting
+                    videoController.onAir()
+                else
+                    videoController.offAir()
+            )
+
             $scope.stopCall = () ->
                 $scope.onAir = false
                 videoController.disconnect(server)
 
+            $scope.toggleSettings = ()->
+                $scope.showSettings = !$scope.showSettings
+
             $scope.startCall = ->
                 $scope.onAir = true
+                $scope.showSettings = false
                 $scope.type = 'host'
                 videoController.startCall()
 
             $scope.joinCall = ->
                 $scope.onAir = true
+                $scope.showSettings = false
                 $scope.type = 'guest'
                 videoController.joinCall()
-
 
             checkAutoCallInterval = null
             checkAutoCall = ->
