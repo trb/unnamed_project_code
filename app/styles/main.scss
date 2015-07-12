@@ -10,6 +10,8 @@ $icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/boots
 @import "autonomy";
 @import "shops";
 @import "navigation";
+@import "overrides";
+@import "video";
 
 body {
   /* Accomodate bootstraps navbar */
