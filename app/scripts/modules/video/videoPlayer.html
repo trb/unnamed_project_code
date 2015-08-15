@@ -17,9 +17,20 @@
                 Answer
             </button>
         </div>
-        <div class="btn-container-on-air" ng-if="onAir">
-            <button class="btn btn-default" ng-click="toggleSettings()">
-                Settings
+        <div class="btn-container-on-air btn-camera-switcher" ng-if="onAir">
+            <button ng-if="hasMultipleVideoDevices"
+                    class="btn btn-default"
+                    ng-click="switchVideoDevice()">
+                <i class="fa fa-caret-left"></i>
+                <i class="fa fa-video-camera"></i>
+                <i class="fa fa-caret-right"></i>
+            </button>
+            <button ng-if="hasMultipleAudioDevices"
+                    class="btn btn-default btn-microphone-switcher"
+                    ng-click="switchAudioDevice()">
+                <i class="fa fa-caret-left"></i>
+                <i class="fa fa-microphone"></i>
+                <i class="fa fa-caret-right"></i>
             </button>
             <button class="btn btn-default"
                     ng-if="onAir"

@@ -1,9 +1,10 @@
-video = angular.module 'Video', []
+video = angular.module 'Video', ['ngCookies']
 
 video.directive('videoPlayer', [
     '$http',
     '$location',
-    ($http, $location) ->
+    '$cookies'
+    ($http, $location, $cookies) ->
         restrict: 'E',
         templateUrl: 'views/modules/video/videoPlayer.html',
         link: ($scope) ->
@@ -36,7 +37,57 @@ video.directive('videoPlayer', [
                     $http(request)
             }
 
+            deviceController = {
+                deviceSettings: {
+                    audioDevices: [],
+                    videoDevices: [],
+                    currentVideoDevice: $cookies.get('video_device'),
+                    currentAudioDevice: $cookies.get('audio_device')
+                }
+
+                setupDevices: (devices) ->
+                    console.log('host devices', devices)
+
+                    audioInputDevices = devices.filter((element) ->
+                        return element.kind == "audioinput"
+                    )
+                    videoInputDevices = devices.filter((element) ->
+                        return element.kind == "videoinput"
+                    )
+                    for device in audioInputDevices
+                        this.deviceSettings.audioDevices.push(device.deviceId)
+                        console.log("audio input device: ", device.deviceId)
+
+                    for device in videoInputDevices
+                        this.deviceSettings.videoDevices.push(device.deviceId)
+                        console.log("video input device: ", device.deviceId)
+
+                    this.deviceSettings.currentAudioDevice = $cookies.get('audio_device') || this.deviceSettings.audioDevices[0]
+                    this.deviceSettings.currentVideoDevice = $cookies.get('video_device') || this.deviceSettings.videoDevices[1]
+
+                    console.log('i use this audio', this.deviceSettings.currentAudioDevice);
+                    return this.deviceSettings
+
+                isLastDevice: (devices, current)->
+                    if devices[devices.length-1] == current
+                        console.log('last device');
+                    devices[devices.length-1] == current
+
+                getNextAudioDevice: ->
+                    if !this.isLastDevice(this.deviceSettings.audioDevices, this.deviceSettings.currentAudioDevice)
+                        return this.deviceSettings.audioDevices[this.deviceSettings.audioDevices.indexOf(this.deviceSettings.currentAudioDevice) + 1]
+                    else
+                        return this.deviceSettings.audioDevices[0];
+                getNextVideoDevice: ->
+                    if !this.isLastDevice(this.deviceSettings.videoDevices, this.deviceSettings.currentVideoDevice)
+                        return this.deviceSettings.videoDevices[this.deviceSettings.videoDevices.indexOf(this.deviceSettings.currentVideoDevice) + 1]
+                    else
+                        return this.deviceSettings.videoDevices[0];
+            }
+
             videoController = {
+                publisher: null
+
                 onAir: ->
                     $('nav').css('display', 'none')
                     $('#menu_controller').css('display', 'none')
@@ -53,6 +104,11 @@ video.directive('videoPlayer', [
                 calculateVideoWidth: ->
                     return $('#video').innerWidth()
 
+                enableDeviceSelectors: (devices) ->
+                    $scope.hasMultipleVideoDevices = devices.videoDevices.length > 1
+                    $scope.hasMultipleAudioDevices = devices.audioDevices.length > 1
+                    $scope.$apply();
+
                 disconnect: (server) ->
                     if server.hostVideoAndAudioSubscriber
                         server.session.unsubscribe(server.hostVideoAndAudioSubscriber)
@@ -66,24 +122,9 @@ video.directive('videoPlayer', [
                     if server.guestVideoAndAudioPublisher
                         server.session.unpublish(server.guestVideoAndAudioPublisher)
 
-                publishHost: ->
-#                    this is how we would allow users to set their devices
-#
-#                    element = document.querySelector('#hardware-setup');
-#
-#                    options = {
-#                        insertMode: 'append'
-#                    };
-#
-#                    component = createOpentokHardwareSetupComponent(document.querySelector('#hardware-setup'), options, (error) ->
-#                        if (error)
-#                            console.error('Error: ', error);
-#                            element.innerHTML = '<strong>Error getting devices</strong>: '
-#                            error.message
-#                            return
-#                    # Add a button to call component.destroy() to close the component.
-#                    )
+                    document.location.reload(); # workaround to be able to call again, should be able to publish again without load.
 
+                publishHost: ->
                     server.session.connect(server.token, (error) ->
                         if (error)
                             console.log("Error connecting: ", error.code, error.message);
@@ -94,28 +135,31 @@ video.directive('videoPlayer', [
                             return
 
                         OT.getDevices((error, devices) ->
-                            console.log('host devices', devices)
 
+                            # load available input/output devices and enable toggle in interface
+                            videoController.enableDeviceSelectors(deviceController.setupDevices(devices));
+
+                            console.log(deviceController.deviceSettings.currentAudioDevice);
                             pubOptions = {
                                 publishVideo: false, #disable the video stream
                                 videoSource: null,
-                                audioSource: devices[0],
+                                audioSource: deviceController.deviceSettings.currentAudioDevice,
                                 height: 1,
                                 width: 1
                             }
 
                             console.log('publisher options', pubOptions);
 
-                            publisher = OT.initPublisher('audio', pubOptions, (error) ->
+                            videoController.publisher = OT.initPublisher('audio', pubOptions, (error) ->
                                 if (error)
                                     console.log('unable to publish')
                                 else
                                     console.log('Publisher initialized.')
                             )
 
-                            server.session.publish(publisher)
+                            server.session.publish(videoController.publisher)
 
-                            server.hostAudioPublisher = publisher
+                            server.hostAudioPublisher = videoController.publisher
                         )
                     )
 
@@ -168,30 +212,14 @@ video.directive('videoPlayer', [
 
                         console.log('can publish');
                         OT.getDevices((error, devices) ->
-                            audioDevices = []
-                            videoDevices = []
-
                             console.log('v', 'guestPublish', arguments)
-                            $scope.devices = devices
-                            $scope.$apply()
 
-                            audioInputDevices = devices.filter((element) ->
-                                return element.kind == "audioInput"
-                            )
-                            videoInputDevices = devices.filter((element) ->
-                                return element.kind == "videoInput"
-                            )
-                            for device in audioInputDevices
-                                audioDevices.push(device.deviceId)
-                                console.log("audio input device: ", device.deviceId)
-
-                            for device in videoInputDevices
-                                videoDevices.push(device.deviceId)
-                                console.log("video input device: ", device.deviceId)
+                            # load available input/output devices and enable toggle in interface
+                            videoController.enableDeviceSelectors(deviceController.setupDevices(devices));
 
                             pubOptions = {
-                                #audioSource: audioDevices[1],
-                                videoSource: videoDevices[1], #second camera on phone, will need to be able to select
+                                audioSource: deviceController.deviceSettings.currentAudioDevice,
+                                videoSource: deviceController.deviceSettings.currentVideoDevice, #second camera on phone, will need to be able to select
                                 mirror: false,
                                 resolution: '1280x720',
                                 frameRate: 30,
@@ -201,7 +229,7 @@ video.directive('videoPlayer', [
 
                             console.log('publisher options', pubOptions)
 
-                            server.guestVideoAndAudioPublisher = OT.initPublisher('video', pubOptions, (error) ->
+                            this.publisher = server.guestVideoAndAudioPublisher = OT.initPublisher('video', pubOptions, (error) ->
                                 if (error)
                                     # The client cannot publish.
                                     # You may want to notify the user.
@@ -210,7 +238,7 @@ video.directive('videoPlayer', [
                                     console.log('Publisher initialized.')
                             )
 
-                            server.session.publish(server.guestVideoAndAudioPublisher)
+                            server.session.publish(this.publisher)
                         )
                     )
 
@@ -238,14 +266,12 @@ video.directive('videoPlayer', [
 
                 joinCall: ->
                     console.log('v', 'join call')
-#                    server.createSession().success(->
                     if OT.checkSystemRequirements() != 1
                         console.log('v', 'System requirements failed')
                         return
 
                     server.session = OT.initSession(server.apiKey, server.sessionId)
                     videoController.setupGuest()
-#                    )
             }
 
             $scope.$watch('onAir', (broadcasting) ->
@@ -259,8 +285,28 @@ video.directive('videoPlayer', [
                 $scope.onAir = false
                 videoController.disconnect(server)
 
-            $scope.toggleSettings = ()->
-                $scope.showSettings = !$scope.showSettings
+            ### @todo the basic functions are now available but the UX is currently terrible
+
+                the audio and video selectors allow you to change devices and save your device
+                settings to a cookie, there is currently no feedback that your device has been
+                changed and you need to reload the page after the change. This will break any
+                calls in progress.
+
+                There is a method that is currently unimplemented on the publisher that would
+                make this a lot easier, it is only available on the mobile platforms.
+
+                https://tokbox.com/developer/guides/audio-video/android/#select_camera
+
+            ###
+
+            $scope.switchAudioDevice = () ->
+                deviceController.deviceSettings.currentAudioDevice = deviceController.getNextAudioDevice();
+                $cookies.put('audio_device', deviceController.deviceSettings.currentAudioDevice);
+
+            $scope.switchVideoDevice = () ->
+                deviceController.deviceSettings.currentVideoDevice = deviceController.getNextVideoDevice();
+                $cookies.put('video_device', deviceController.deviceSettings.currentVideoDevice);
+
 
             $scope.startCall = ->
                 $scope.onAir = true
