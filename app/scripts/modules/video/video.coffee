@@ -12,8 +12,8 @@ video.directive('videoPlayer', [
 
             server = {
                 apiKey: '45174472'
-                sessionId: '1_MX40NTE3NDQ3Mn5-MTQzNTAxMTk0MTM1NH5OeG9iOTI0RFFYUTZsVERsQStDeUtLNDR-fg'
-                token: 'T1==cGFydG5lcl9pZD00NTE3NDQ3MiZzaWc9NGVmMGVjZWNkNzRiYTJkMDliZjNlYWM1OWYyYzlkMjIxY2Q4NGI0Mzpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTFfTVg0ME5URTNORFEzTW41LU1UUXpOVEF4TVRrME1UTTFOSDVPZUc5aU9USTBSRkZZVVRac1ZFUnNRU3REZVV0TE5EUi1mZyZjcmVhdGVfdGltZT0xNDM1MDExOTQ1Jm5vbmNlPTAuOTMxNTExNDUxNTUyNzA1MSZleHBpcmVfdGltZT0xNDM3NjAzOTM3JmNvbm5lY3Rpb25fZGF0YT0='
+                sessionId: '1_MX40NTE3NDQ3Mn5-MTQ0MDk2NjY5OTkyMn5Ia3MwQkdjSU5OTEFrSjhrd0tFYm9JUnF-UH4'
+                token: 'T1==cGFydG5lcl9pZD00NTE3NDQ3MiZzaWc9NWIzYTVjMzY4YjBlYzk0YTZkZTdiMmVlMGE5OWQyODM3OWE2Y2Y2Nzpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTFfTVg0ME5URTNORFEzTW41LU1UUTBNRGsyTmpZNU9Ua3lNbjVJYTNNd1FrZGpTVTVPVEVGclNqaHJkMHRGWW05SlVuRi1VSDQmY3JlYXRlX3RpbWU9MTQ0MDk2NjcwNCZub25jZT0wLjA5NjMzMTc0NDYwNjcyOTIyJmV4cGlyZV90aW1lPTE0NDM1NTg2OTEmY29ubmVjdGlvbl9kYXRhPQ=='
                 session: {}
 
                 hostVideoAndAudioSubscriber: null
@@ -46,31 +46,31 @@ video.directive('videoPlayer', [
                 }
 
                 setupDevices: (devices) ->
-                    console.log('host devices', devices)
+                    #console.log('host devices', devices)
 
                     audioInputDevices = devices.filter((element) ->
-                        return element.kind == "audioinput"
+                        return element.kind == "audioInput"
                     )
                     videoInputDevices = devices.filter((element) ->
-                        return element.kind == "videoinput"
+                        return element.kind == "videoInput"
                     )
                     for device in audioInputDevices
                         this.deviceSettings.audioDevices.push(device.deviceId)
-                        console.log("audio input device: ", device.deviceId)
+                        #console.log("audio input device: ", device.deviceId)
 
                     for device in videoInputDevices
                         this.deviceSettings.videoDevices.push(device.deviceId)
-                        console.log("video input device: ", device.deviceId)
+                        #console.log("video input device: ", device.deviceId)
 
                     this.deviceSettings.currentAudioDevice = $cookies.get('audio_device') || this.deviceSettings.audioDevices[0]
                     this.deviceSettings.currentVideoDevice = $cookies.get('video_device') || this.deviceSettings.videoDevices[1]
 
-                    console.log('i use this audio', this.deviceSettings.currentAudioDevice);
+                    #console.log('i use this audio', this.deviceSettings.currentAudioDevice);
                     return this.deviceSettings
 
                 isLastDevice: (devices, current)->
-                    if devices[devices.length-1] == current
-                        console.log('last device');
+                    #if devices[devices.length-1] == current
+                        #console.log('last device');
                     devices[devices.length-1] == current
 
                 getNextAudioDevice: ->
@@ -127,11 +127,11 @@ video.directive('videoPlayer', [
                 publishHost: ->
                     server.session.connect(server.token, (error) ->
                         if (error)
-                            console.log("Error connecting: ", error.code, error.message);
+                            #console.log("Error connecting: ", error.code, error.message);
                             return
 
                         if server.session.capabilities.publish != 1
-                            console.log('publish not available')
+                            #console.log('publish not available')
                             return
 
                         OT.getDevices((error, devices) ->
@@ -139,7 +139,7 @@ video.directive('videoPlayer', [
                             # load available input/output devices and enable toggle in interface
                             videoController.enableDeviceSelectors(deviceController.setupDevices(devices));
 
-                            console.log(deviceController.deviceSettings.currentAudioDevice);
+                            #console.log(deviceController.deviceSettings.currentAudioDevice);
                             pubOptions = {
                                 publishVideo: false, #disable the video stream
                                 videoSource: null,
@@ -148,13 +148,13 @@ video.directive('videoPlayer', [
                                 width: 1
                             }
 
-                            console.log('publisher options', pubOptions);
+                            #console.log('publisher options', pubOptions);
 
                             videoController.publisher = OT.initPublisher('audio', pubOptions, (error) ->
                                 if (error)
-                                    console.log('unable to publish')
+                                    #console.log('unable to publish')
                                 else
-                                    console.log('Publisher initialized.')
+                                    #console.log('Publisher initialized.')
                             )
 
                             server.session.publish(videoController.publisher)
@@ -164,13 +164,13 @@ video.directive('videoPlayer', [
                     )
 
                 setupHost: ->
-                    console.log('v', 'setup host')
+                    #console.log('v', 'setup host')
                     server.session.on("sessionConnected", (sessionConnectEvent) ->
-                        console.log("sessionConnected executed")
+                        #console.log("sessionConnected executed")
                     )
 
                     server.session.on("streamCreated", (streamCreatedEvent) ->
-                        console.log("streamCreated executed")
+                        #console.log("streamCreated executed")
                         server.hostVideoAndAudioSubscriber = server.session.subscribe(
                             streamCreatedEvent.stream,
                             'video',
@@ -182,19 +182,19 @@ video.directive('videoPlayer', [
                     )
 
                     server.session.on("sessionDestroyed", (stream) ->
-                        console.log("sessionDestroyed executed")
+                        #console.log("sessionDestroyed executed")
                     )
 
                     videoController.publishHost()
 
                 startCall: ->
-                    console.log('v', 'start call')
+                    #console.log('v', 'start call')
 #                    server.createSession().success(->
                     if OT.checkSystemRequirements() != 1
-                        console.log('v', 'System requirements failed')
+                        #console.log('v', 'System requirements failed')
                         return
 
-                    console.log('v', 'session created')
+                    #console.log('v', 'session created')
                     server.session = OT.initSession(server.apiKey, server.sessionId)
                     videoController.setupHost()
 #                    )
@@ -202,17 +202,17 @@ video.directive('videoPlayer', [
                 publishGuest: ->
                     server.session.connect(server.token, (error) ->
                         if (error)
-                            console.log("Error connecting: ", error.code, error.message)
+                            #console.log("Error connecting: ", error.code, error.message)
                             return
 
-                        console.log("Connected to the session.")
+                        #console.log("Connected to the session.")
                         if (server.session.capabilities.publish != 1)
-                            console.log('publish not available')
+                            #console.log('publish not available')
                             return
 
-                        console.log('can publish');
+                        #console.log('can publish');
                         OT.getDevices((error, devices) ->
-                            console.log('v', 'guestPublish', arguments)
+                            #console.log('v', 'guestPublish', arguments)
 
                             # load available input/output devices and enable toggle in interface
                             videoController.enableDeviceSelectors(deviceController.setupDevices(devices));
@@ -227,15 +227,15 @@ video.directive('videoPlayer', [
                                 width: videoController.calculateVideoWidth()
                             }
 
-                            console.log('publisher options', pubOptions)
+                            #console.log('publisher options', pubOptions)
 
                             this.publisher = server.guestVideoAndAudioPublisher = OT.initPublisher('video', pubOptions, (error) ->
                                 if (error)
                                     # The client cannot publish.
                                     # You may want to notify the user.
-                                    console.log('unable to publish')
+                                    #console.log('unable to publish')
                                 else
-                                    console.log('Publisher initialized.')
+                                    #console.log('Publisher initialized.')
                             )
 
                             server.session.publish(this.publisher)
@@ -244,30 +244,30 @@ video.directive('videoPlayer', [
 
                 setupGuest: ->
                     server.session.on("sessionConnected", (sessionConnectEvent) ->
-                        console.log("sessionConnected executed")
+                        #console.log("sessionConnected executed")
                     )
 
                     server.session.on("streamCreated", (streamCreatedEvent) ->
-                        console.log("streamCreated executed, listening to host audio")
+                        #console.log("streamCreated executed, listening to host audio")
                         server.guestAudioSubscriber = server.session.subscribe(
                             streamCreatedEvent.stream,
                             'audio',
                                 subscribeToAudio: true
                                 subscribeToVideo: false
                         );
-                        console.log('subscriber, guest audio', server.guestAudioSubscriber);
+                        #console.log('subscriber, guest audio', server.guestAudioSubscriber);
                     )
 
                     server.session.on("sessionDestroyed", (stream) ->
-                        console.log("sessionDestroyed executed")
+                        #console.log("sessionDestroyed executed")
                     )
 
                     videoController.publishGuest()
 
                 joinCall: ->
-                    console.log('v', 'join call')
+                    #console.log('v', 'join call')
                     if OT.checkSystemRequirements() != 1
-                        console.log('v', 'System requirements failed')
+                        #console.log('v', 'System requirements failed')
                         return
 
                     server.session = OT.initSession(server.apiKey, server.sessionId)
@@ -302,11 +302,12 @@ video.directive('videoPlayer', [
             $scope.switchAudioDevice = () ->
                 deviceController.deviceSettings.currentAudioDevice = deviceController.getNextAudioDevice();
                 $cookies.put('audio_device', deviceController.deviceSettings.currentAudioDevice);
+                $scope.stopCall();
 
             $scope.switchVideoDevice = () ->
                 deviceController.deviceSettings.currentVideoDevice = deviceController.getNextVideoDevice();
                 $cookies.put('video_device', deviceController.deviceSettings.currentVideoDevice);
-
+                $scope.stopCall();
 
             $scope.startCall = ->
                 $scope.onAir = true
