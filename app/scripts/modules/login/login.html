@@ -2,6 +2,11 @@
     <div class="col-xs-12 col-sm-8 col-lg-6 col-sm-offset-2 col-lg-offset-3">
         <h1>Please, log in</h1>
 
+        <div ng-if="showError"
+             class="alert alert-danger">
+            Please enter an email address and a password
+        </div>
+
         <form name="loginForm">
             <div class="form-group"
                  ng-class="{'has-error': loginForm.email.$invalid}">

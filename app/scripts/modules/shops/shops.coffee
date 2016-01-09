@@ -118,14 +118,16 @@ angular.module('Shops', ['Video'])
           else
             this.autoOpenList = {}
 
-        this.toggle = (id) ->
+        this.toggle = (id) =>
           if this.openList[id]
             delete this.openList[id]
           else
             this.openList[id] = true
 
-        this.startCall = (id) ->
+        this.startCall = (id) =>
           $location.url('/video?call=' + id)
+
+        return
 
       controllerAs: 'shops'
       restrict: 'E'
