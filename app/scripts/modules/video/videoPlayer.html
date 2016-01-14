@@ -1,44 +1,15 @@
-<script src='//static.opentok.com/v2/js/opentok.min.js'></script>
-<link rel="stylesheet" type="text/css" href="https://static.opentok.com/hardware-setup/v1/css/opentok-hardware-setup.css">
-<script src="https://static.opentok.com/hardware-setup/v1/js/opentok-hardware-setup.js"></script>
-
 <div id="video_menu" class="row">
-    <div class="hardware-setup" id="hardware-setup" ng-show="showSettings"></div>
+    <div class="hardware-setup"
+         id="hardware-setup"
+         ng-show="showSettings"></div>
     <div class="col-xs-12">
-        <div class="btn-container-off-air" ng-if="!onAir">
-            <button class="btn btn-primary"
-                    ng-if="!onAir"
-                    ng-click="startCall()">
-                Call
-            </button>
-            <button class="btn btn-default"
-                    ng-if="!onAir"
-                    ng-click="joinCall()">
-                Answer
-            </button>
-        </div>
-        <div class="btn-container-on-air btn-camera-switcher" ng-if="onAir">
-        {{ audioDevice }}
-        {{ videoDevice }}
-            <button
-                    class="btn btn-default"
-                    ng-click="switchVideoDevice()">
-                <i class="fa fa-caret-left"></i>
-                <i class="fa fa-video-camera"></i>
-                <i class="fa fa-caret-right"></i>
-            </button>
-            <button
-                    class="btn btn-default btn-microphone-switcher"
-                    ng-click="switchAudioDevice()">
-                <i class="fa fa-caret-left"></i>
-                <i class="fa fa-microphone"></i>
-                <i class="fa fa-caret-right"></i>
-            </button>
-            <button class="btn btn-default"
-                    ng-if="onAir"
-                    ng-click="stopCall()">
-                Hang-up
-            </button>
+        <div
+                ng-click="call()"
+                id="hangout"
+                class="
+                    pull-right
+                    btn
+                    btn-primary">
         </div>
     </div>
 </div>
