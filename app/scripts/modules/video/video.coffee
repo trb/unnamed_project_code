@@ -15,12 +15,12 @@ video.directive('videoPlayer', [
         widget_size: 72,
         invites: [
           {
-            id: 'aclarkd@gmail.com',
-            invite_type: 'EMAIL'
+            id: '113131597485387162824',
+            invite_type: 'PROFILE'
           },
           {
-            id: 'thomas.rubbert@gmail.com',
-            invite_type: 'EMAIL'
+            id: '116239544120999981614',
+            invite_type: 'PROFILE'
           }
         ]
       });
