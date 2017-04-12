@@ -11,9 +11,9 @@ video.directive('videoPlayer', [
             $scope.onAir = false;
 
             server = {
-                apiKey: '45174472'
-                sessionId: '2_MX40NTE3NDQ3Mn5-MTQ2MTU2MjkwMzY2OX5LTjJDczY5ZCsrc0ZnQUpaditKcWEva2N-UH4'
-                token: 'T1==cGFydG5lcl9pZD00NTE3NDQ3MiZzaWc9YTI3NmI5NjdiOGNkZGU1MDc3NGExNDhiMWZhYzcxMjBkMzY5NGI1NDpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5URTNORFEzTW41LU1UUTJNVFUyTWprd016WTJPWDVMVGpKRGN6WTVaQ3NyYzBablFVcGFkaXRLY1dFdmEyTi1VSDQmY3JlYXRlX3RpbWU9MTQ2MTU2MjkwNiZub25jZT0wLjk1MDU5MDgzNjY0NTcxMzEmZXhwaXJlX3RpbWU9MTQ2NDE1NDkwMCZjb25uZWN0aW9uX2RhdGE9'
+                apiKey: '45818972'
+                sessionId: '2_MX40NTgxODk3Mn5-MTQ5MTk2NzY2MjY3MX54ZDU1Uzk0YmV1MUVjRnp0bnJ0MkRXUUh-fg'
+                token: 'T1==cGFydG5lcl9pZD00NTgxODk3MiZzaWc9ZTQyYjY0OTkwNjk1NjJhYWYwZDI0MjYwZjg0MzRlYTliNTE3ODU4MzpzZXNzaW9uX2lkPTJfTVg0ME5UZ3hPRGszTW41LU1UUTVNVGsyTnpZMk1qWTNNWDU0WkRVMVV6azBZbVYxTVVWalJucDBibkowTWtSWFVVaC1mZyZjcmVhdGVfdGltZT0xNDkxOTY3Njg5Jm5vbmNlPTAuMjMyNjU3NDk4MzEyNzQxNjMmcm9sZT1wdWJsaXNoZXImZXhwaXJlX3RpbWU9MTQ5NDU1OTY4OQ=='
                 session: {}
 
                 hostVideoAndAudioSubscriber: null
@@ -27,7 +27,7 @@ video.directive('videoPlayer', [
                         method: 'POST',
                         url: 'https://api.opentok.com/session/create',
                         headers: {
-                            'X-TB-PARTNER-AUTH': this.apiKey + ':3beb94ec2b0ee7cdf64b42caaf6120baf543129b'
+                            'X-TB-PARTNER-AUTH': this.apiKey + ':thisWouldBeSecret'
                         }
                         transformResponse: (data) ->
                             x2js = new X2JS()
